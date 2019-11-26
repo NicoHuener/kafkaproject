@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/JavaProject/JavaProject.iml" filepath="$PROJECT_DIR$/JavaProject/JavaProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafkaproject.iml" filepath="$PROJECT_DIR$/kafkaproject.iml" />
     </modules>
   </component>
