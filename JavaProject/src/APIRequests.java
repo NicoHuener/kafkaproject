@@ -9,6 +9,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class APIRequests {
+    public static String APIToken;
+    public static String artistid;
     static void sendPOST() throws IOException, InterruptedException, ParseException {
 
         HttpClient client = HttpClient.newHttpClient();
@@ -25,15 +27,11 @@ public class APIRequests {
 
 
 
-        System.out.println(response.body().contains("\"access_token\""));
+        //System.out.println(response.body().contains("\"access_token\""));
 
-        System.out.println(response.body());
-        String StrResponse = response.body();
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(StrResponse);
-        System.out.println(json);
-        String token = json.get("access_token").toString();
-        System.out.println(token);
+        var json = createjson(response.body());
+        APIToken = json.get("access_token").toString();
+        System.out.println(APIToken);
     }
     /*public static URI appendUri(String uri, String appendQuery) throws URISyntaxException {
         URI oldUri = new URI(uri);
@@ -50,16 +48,17 @@ public class APIRequests {
 
         return newUri;
     }*/
-    static void sendGet() throws IOException, InterruptedException {
-        String firstname = "eminem";
+    static void sendGetartistID() throws IOException, InterruptedException, ParseException {
+        //Request for looking up the artist ID
+        String firstname = "madonna";
         String secondname = "";
         String searchname = createsearchname(firstname, secondname);
         System.out.println(searchname);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.spotify.com/v1/search?q=" +searchname +"&type=artist"))
-                .setHeader("Authorization", "Bearer BQDteWDQ4hRDXSxMWOoBlfJqqhgTkBQLSoPnOTe2OAimHCa8nYzhn8FSBHF9RShu-JD48lW9M_UUnyYAzl8")
+                .uri(URI.create("https://api.spotify.com/v1/search?q=" +searchname +"&type=artist&limit=1"))
+                .setHeader("Authorization", "Bearer "+ APIToken)
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
 
@@ -68,8 +67,25 @@ public class APIRequests {
                 HttpResponse.BodyHandlers.ofString());
 
         System.out.println(response.body());
+//---------------------not working ------------------------
+        JSONObject artistjson = createjson(response.body());
+        //System.out.println(artistjson);
+        String artistobject = artistjson.get("total").toString();
+        //JSONParser parser = new JSONParser();
+        //JSONObject json = (JSONObject) parser.parse(artistobject);
+       // artistid = json.get("id").toString();
+        System.out.println("JSON: "+artistobject);
+
+        //-----------------------------------------------------------
     }
 
+    public static JSONObject createjson (String httpResponse) throws ParseException {
+        //Method to parse HTTP response to a JSON object
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(httpResponse);
+        System.out.println(json);
+        return json;
+    }
      public static String createsearchname(String firstname, String secondname) {
         if (firstname.equals(""))
         {
@@ -82,9 +98,30 @@ public class APIRequests {
          return firstname + "20%" + secondname;
      }
 
+    static void sendGetartisttoptracks() throws IOException, InterruptedException {
+        //Request for looking up the artist ID
+        String artistID = "7dGJo4pcD2V6oG8kP0tJRR";
+
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.spotify.com/v1/artists/"+ artistID + "/top-tracks?country=DE"))
+                .setHeader("Authorization", "Bearer "+ APIToken)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        System.out.println(response.body());
+    }
+
+
     public static void main(String[] args) throws IOException, InterruptedException, ParseException {
-    //sendPOST();
-        sendGet();
+    sendPOST();
+       // sendGetartistID();
+        sendGetartisttoptracks();
     }
 
 
