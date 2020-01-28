@@ -1,0 +1,32 @@
+kafka-topics --create \
+    --bootstrap-server 192.168.99.100:9092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic streams-plaintext-input
+
+kafka-topics --create \
+    --bootstrap-server 192.168.99.100:9092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic streams-wordcount-output \
+    --config cleanup.policy=compact
+
+kafka-topics --bootstrap-server 192.168.99.100:9092 --describe
+
+kafka-run-class org.apache.kafka.streams.examples.wordcount.WordCountDemo
+
+kafka-console-producer --broker-list 192.168.99.100:9092 --topic streams-plaintext-input
+
+kafka-console-consumer --bootstrap-server 192.168.99.100:9092 \
+    --topic streams-wordcount-output \
+    --from-beginning \
+    --formatter kafka.tools.DefaultMessageFormatter \
+    --property print.key=true \
+    --property print.value=true \
+    --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+    --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+	
+kafka-console-producer --broker-list 192.168.99.100:9092 --topic streams-plaintext-input
+
+	
+	
