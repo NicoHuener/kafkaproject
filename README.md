@@ -1,3 +1,2 @@
 # kafkaproject
-Hello World
-Hello Joshua
+Das beste Kafkaprojekt dieser Erde und auch des Mars!
